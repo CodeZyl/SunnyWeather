@@ -1,5 +1,6 @@
 package com.sunnyweather.android.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sunnyweather.android.R
 import com.sunnyweather.android.SunnyWeatherApplication
 import com.sunnyweather.android.databinding.FragmentPlaceBinding
+import com.sunnyweather.android.ui.weather.WeatherActivity
 
 
 class PlaceFragment : Fragment() {
@@ -35,17 +37,25 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        if(viewModel.isPlaceSaved()) {
+            val place = viewModel.getSavedPlace()
+            val intent = Intent(context , WeatherActivity::class.java).apply {
+                putExtra("location_lng" , place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+            return
+        }
         binding = FragmentPlaceBinding.inflate(layoutInflater)
         val layoutManager = LinearLayoutManager(activity)
         activity?.setContentView(binding.root)
-        //val recyclerView : RecyclerView = activity.findViewById(R.id.recyclerView)
         binding.recyclerView.layoutManager = layoutManager
         adapter = PlaceAdapter(this , viewModel.placeList)
         binding.recyclerView.adapter = adapter
         val searchPlaceEdit : EditText? = activity?.findViewById(R.id.searchPlaceEdit)
-        //Log.d("->>>>>>>>>>>>>>>>>" , "=============================================1")
         searchPlaceEdit?.addTextChangedListener {editable ->
-            //Log.d("->>>>>>>>>>>>>>>>>" , "=============================================2")
             val content = editable.toString()
             if(content.isNotEmpty()) {
                 viewModel.searchPlaces(content)
@@ -59,7 +69,6 @@ class PlaceFragment : Fragment() {
 
         }
         viewModel.placeLiveData.observe(this.viewLifecycleOwner , Observer {result ->
-            //Log.d("------>>>>>>_" , "$result")
             val places = result.getOrNull()
             if(places != null) {
                 binding.recyclerView.visibility = View.VISIBLE
