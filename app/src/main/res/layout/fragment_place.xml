@@ -1,10 +1,6 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data>
-
-    </data>
 
     <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?android:windowBackground">
@@ -42,4 +38,3 @@
             android:layout_below="@id/actionBarLayout"
             android:visibility="gone" />
     </RelativeLayout>
-</layout>
